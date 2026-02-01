@@ -8,21 +8,20 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 
-// Redirect homepage to blog
-Route::get('/', function () {
-    return redirect()->route('blog.index');
-})->name('home');
+// Homepage shows blog directly
+Route::get('/', [App\Http\Controllers\BlogController::class, 'index'])->name('home');
+
+// Authentication routes (must be before catch-all routes)
+require __DIR__.'/auth.php';
+
+// TEST ROUTE - Title Image Generation Test
+require __DIR__.'/test-image.php';
 
 // Blog routes (Public)
-Route::prefix('blog')->name('blog.')->group(function () {
-    Route::get('/', [App\Http\Controllers\BlogController::class, 'index'])->name('index');
+Route::name('blog.')->group(function () {
     Route::get('/category/{category:slug}', [App\Http\Controllers\BlogController::class, 'category'])->name('category');
     Route::get('/search', [App\Http\Controllers\BlogController::class, 'search'])->name('search');
-    Route::get('/{post:slug}', [App\Http\Controllers\BlogController::class, 'show'])->name('show');
 });
-
-// Authentication routes
-require __DIR__.'/auth.php';
 
 // Admin routes (Admin Dashboard)
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
@@ -38,3 +37,6 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('adsense', App\Http\Controllers\Admin\AdsenseAdminController::class);
 
 });
+
+// Blog show route (must be last as it's a catch-all)
+Route::get('/{post:slug}', [App\Http\Controllers\BlogController::class, 'show'])->name('blog.show');

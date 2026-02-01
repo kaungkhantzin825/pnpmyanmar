@@ -1,17 +1,18 @@
-# Video Blog Platform - Project Summary
+# PNP Myanmar News - Project Summary
 
 ## ✅ Installation Complete!
 
-Your video blog platform is now ready to use!
+Your Myanmar news platform with automatic title image generation is now ready to use!
 
 ## 🌐 Access Your Site
 
-- **Frontend (Blog):** http://127.0.0.1:8000/blog
+- **Frontend (News):** http://127.0.0.1:8000
 - **Admin Panel:** http://127.0.0.1:8000/admin/dashboard
+- **Test Title Images:** http://127.0.0.1:8000/test-title-image
 
 ## 🔐 Admin Login Credentials
 
-- **Email:** admin@example.com
+- **Email:** admin@pnpmyanmar.com
 - **Password:** password
 
 ⚠️ **IMPORTANT:** Change this password immediately!
@@ -45,6 +46,16 @@ Your video blog platform is now ready to use!
 
 ### Features Implemented
 
+#### 🎨 NEW: Title Image Generation (Myanmar Unicode)
+- ✅ Node.js + Puppeteer integration
+- ✅ Proper Myanmar Unicode text rendering
+- ✅ Automatic text extraction from asterisks
+- ✅ 1200x630 PNG images with blue gradient
+- ✅ Google Fonts (Noto Sans Myanmar)
+- ✅ Auto-generation on post create/update
+- ✅ Manual upload option available
+- **Test it:** http://127.0.0.1:8000/test-title-image
+
 #### Frontend
 - ✅ Clean, responsive design
 - ✅ Facebook video embedding
@@ -72,7 +83,21 @@ Your video blog platform is now ready to use!
 
 ## 🎯 Next Steps
 
-### 1. Customize Your Site
+### 1. Test Title Image Generation
+```bash
+# Visit the test page
+http://127.0.0.1:8000/test-title-image
+```
+
+### 2. Create a Post with Title Image
+1. Login to admin panel
+2. Go to "Blog Management" → "Add New Post"
+3. Enter title with asterisks: `သတင်း * ကမ္ဘာ့သတင်း သုံးသပ်ချက် * ၂၀၂၆`
+4. Check "Generate from title text"
+5. Fill in other fields
+6. Save and view the post
+
+### 3. Customize Your Site
 ```bash
 # Edit site name in .env
 APP_NAME="Your Site Name"
@@ -110,9 +135,10 @@ APP_NAME="Your Site Name"
 ## 📊 Sample Data
 
 The database has been seeded with:
-- ✅ 1 Admin user
-- ✅ 6 Categories
-- ✅ 3 Sample posts
+- ✅ 1 Admin user (admin@pnpmyanmar.com)
+- ✅ 8 News categories (Politics, Business, Technology, Sports, etc.)
+- ✅ 30 Myanmar news posts with CDN images
+- ✅ Site name: "PNP Myanmar News"
 
 ## 🔧 Common Commands
 
@@ -149,10 +175,20 @@ mysqldump -u root -p blog_app > backup.sql
 
 ## 📖 Documentation
 
+### General Documentation
 - **Quick Start:** QUICK_START.md
 - **Installation Guide:** INSTALLATION_GUIDE.md
 - **Feature Guide:** README_BLOG.md
 - **AdSense Guide:** ADSENSE_GUIDE.md
+- **Database Diagram:** DATABASE_DIAGRAM.md
+- **URL Structure:** URL_STRUCTURE.md
+- **Troubleshooting:** TROUBLESHOOTING.md
+
+### Title Image Generation (NEW!)
+- **Quick Guide:** QUICK_TITLE_IMAGE_GUIDE.md ⭐
+- **Full Documentation:** TITLE_IMAGE_FEATURE.md
+- **Setup Complete:** TITLE_IMAGE_SETUP_COMPLETE.md
+- **Test Page:** http://127.0.0.1:8000/test-title-image
 
 ## 🎨 Design Features
 
@@ -251,6 +287,14 @@ php artisan cache:clear
 
 ## ✨ Features Highlights
 
+### 🎨 Title Image Generation (NEW!)
+- **Myanmar Unicode Support:** Proper text shaping with Noto Sans Myanmar
+- **Asterisk Extraction:** `မြန်မာစာ * Text * ၁၀၆` → extracts "Text"
+- **Auto-Generation:** Checkbox to generate on save
+- **High Quality:** 1200x630 PNG with blue gradient
+- **Node.js + Puppeteer:** Professional browser rendering
+- **Test Page:** Built-in testing at `/test-title-image`
+
 ### Facebook Video Integration
 - Automatic video ID extraction
 - Multiple URL format support
@@ -272,14 +316,22 @@ php artisan cache:clear
 
 ## 🎉 You're All Set!
 
-Your video blog platform is ready to go. Start by:
-1. ✅ Logging into admin panel
-2. ✅ Creating categories
-3. ✅ Adding your first post
-4. ✅ Setting up AdSense
-5. ✅ Sharing your site!
+Your PNP Myanmar News platform is ready to go. Start by:
+1. ✅ Testing title image generation at `/test-title-image`
+2. ✅ Logging into admin panel
+3. ✅ Creating a post with Myanmar title and asterisks
+4. ✅ Checking "Generate from title text"
+5. ✅ Viewing the beautiful generated image!
 
-**Happy blogging! 🎥✨**
+### 🚀 Key Features Ready to Use:
+- ✅ Myanmar Unicode title images (Puppeteer + Node.js)
+- ✅ 30 sample news posts with categories
+- ✅ Clean URL structure (no /blog prefix)
+- ✅ Responsive design with Tailwind CSS
+- ✅ Admin panel with AdminLTE
+- ✅ AdSense integration ready
+
+**Happy publishing! 📰✨**
 
 ---
 

@@ -1,6 +1,6 @@
 @extends('layouts.blog')
 
-@section('title', 'Home - Video Blog')
+@section('title', 'Home - PNP Myanmar News')
 
 @push('styles')
 <style>
@@ -185,30 +185,13 @@
     <div class="hero-carousel-track" id="heroCarouselTrack">
         @foreach($featuredPosts as $index => $featured)
             <div class="hero-slide {{ $index === 0 ? 'active' : '' }}">
-                @if($featured->thumbnail)
-                    <img src="{{ Storage::url($featured->thumbnail) }}" alt="{{ $featured->title }}" class="hero-image">
-                @else
-                    <div class="hero-image hero-gradient"></div>
-                @endif
-                <div class="hero-overlay"></div>
-                <div class="hero-content">
-                    <div class="max-w-screen-2xl mx-auto px-4">
-                        <span class="hero-badge">
-                            <i class="fas fa-star"></i> FEATURED
-                        </span>
-                        <h1 class="hero-title">{{ $featured->title }}</h1>
-                        <p class="hero-description">{{ $featured->description }}</p>
-                        <div class="hero-meta">
-                            <span><i class="fas fa-eye"></i> {{ number_format($featured->views) }} views</span>
-                            @if($featured->category)
-                                <span><i class="fas fa-folder"></i> {{ $featured->category->name }}</span>
-                            @endif
-                        </div>
-                        <a href="{{ route('blog.show', $featured->slug) }}" class="hero-btn">
-                            <i class="fas fa-play"></i> Watch Now
-                        </a>
-                    </div>
-                </div>
+                <a href="{{ route('blog.show', $featured->slug) }}" class="block w-full h-full">
+                    @if($featured->thumbnail)
+                        <img src="{{ str_starts_with($featured->thumbnail, 'http') ? $featured->thumbnail : Storage::url($featured->thumbnail) }}" alt="{{ $featured->title }}" class="hero-image">
+                    @else
+                        <div class="hero-image hero-gradient"></div>
+                    @endif
+                </a>
             </div>
         @endforeach
     </div>
@@ -236,22 +219,26 @@
             <!-- Featured Posts Carousel -->
             @if($featuredPosts->count() > 0)
                 <div class="mb-8">
-                    <h2 class="text-2xl font-bold mb-4">Featured Videos</h2>
+                    <h2 class="text-2xl font-bold mb-4">Featured News</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         @foreach($featuredPosts as $featured)
                             <a href="{{ route('blog.show', $featured->slug) }}" class="block bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition">
                                 @if($featured->thumbnail)
-                                    <img src="{{ Storage::url($featured->thumbnail) }}" alt="{{ $featured->title }}" class="w-full h-48 object-cover">
+                                    <img src="{{ str_starts_with($featured->thumbnail, 'http') ? $featured->thumbnail : Storage::url($featured->thumbnail) }}" alt="{{ $featured->title }}" class="w-full h-48 object-cover">
                                 @else
                                     <div class="w-full h-48 bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
-                                        <i class="fas fa-video text-white text-5xl"></i>
+                                        <i class="fas fa-newspaper text-white text-5xl"></i>
                                     </div>
                                 @endif
                                 <div class="p-4">
-                                    <h3 class="font-bold text-lg mb-2 line-clamp-2">{{ $featured->title }}</h3>
-                                    <div class="flex items-center text-sm text-gray-600">
-                                        <i class="fas fa-eye mr-1"></i> {{ number_format($featured->views) }}
-                                    </div>
+                                    @if($featured->title_thumbnail)
+                                        <!-- Show generated title image instead of text -->
+                                        <img src="{{ str_starts_with($featured->title_thumbnail, 'http') ? $featured->title_thumbnail : Storage::url($featured->title_thumbnail) }}" alt="{{ $featured->title }}" class="w-full mb-2 rounded">
+                                    @else
+                                        <!-- Show text title if no title image -->
+                                        <h3 class="font-bold text-lg mb-2 line-clamp-2">{{ $featured->title }}</h3>
+                                    @endif
+                                    <p class="text-gray-600 text-sm line-clamp-2">{{ $featured->description }}</p>
                                 </div>
                             </a>
                         @endforeach
@@ -270,27 +257,29 @@
             @endif
 
             <!-- All Posts -->
-            <h2 class="text-2xl font-bold mb-4">Latest Videos</h2>
+            <h2 class="text-2xl font-bold mb-4">Latest News</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 @foreach($posts as $post)
                     <a href="{{ route('blog.show', $post->slug) }}" class="block bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition">
                         @if($post->thumbnail)
-                            <img src="{{ Storage::url($post->thumbnail) }}" alt="{{ $post->title }}" class="w-full h-48 object-cover">
+                            <img src="{{ str_starts_with($post->thumbnail, 'http') ? $post->thumbnail : Storage::url($post->thumbnail) }}" alt="{{ $post->title }}" class="w-full h-48 object-cover">
                         @else
                             <div class="w-full h-48 bg-gradient-to-r from-blue-400 to-indigo-500 flex items-center justify-center">
-                                <i class="fas fa-video text-white text-4xl"></i>
+                                <i class="fas fa-newspaper text-white text-4xl"></i>
                             </div>
                         @endif
                         <div class="p-4">
                             @if($post->category)
                                 <span class="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded">{{ $post->category->name }}</span>
                             @endif
-                            <h3 class="font-bold text-lg mt-2 mb-2 line-clamp-2">{{ $post->title }}</h3>
-                            <p class="text-gray-600 text-sm line-clamp-2 mb-2">{{ $post->description }}</p>
-                            <div class="flex items-center justify-between text-sm text-gray-500">
-                                <span><i class="fas fa-eye mr-1"></i> {{ number_format($post->views) }}</span>
-                                <span>{{ $post->published_at->diffForHumans() }}</span>
-                            </div>
+                            @if($post->title_thumbnail)
+                                <!-- Show generated title image instead of text -->
+                                <img src="{{ str_starts_with($post->title_thumbnail, 'http') ? $post->title_thumbnail : Storage::url($post->title_thumbnail) }}" alt="{{ $post->title }}" class="w-full mt-2 mb-2 rounded">
+                            @else
+                                <!-- Show text title if no title image -->
+                                <h3 class="font-bold text-lg mt-2 mb-2 line-clamp-2">{{ $post->title }}</h3>
+                            @endif
+                            <p class="text-gray-600 text-sm line-clamp-2">{{ $post->description }}</p>
                         </div>
                     </a>
                 @endforeach

@@ -11,21 +11,20 @@
                 <!-- Title -->
                 <div class="p-6 border-b">
                     @if($post->title_thumbnail)
-                        <!-- Display title as image -->
+                        <!-- Display generated title image (shown as main title when "Generate Title Image" was used) -->
                         <div class="mb-4">
-                            <img src="{{ Storage::url($post->title_thumbnail) }}" alt="{{ $post->title }}" class="w-full max-w-4xl mx-auto rounded-lg shadow-sm">
+                            <img src="{{ str_starts_with($post->title_thumbnail, 'http') ? $post->title_thumbnail : Storage::url($post->title_thumbnail) }}" alt="{{ $post->title }}" class="w-full max-w-4xl mx-auto rounded-lg shadow-sm block">
                         </div>
+                        <h1 class="sr-only">{{ $post->title }}</h1>
                     @else
-                        <!-- Display title as text -->
                         <h1 class="text-3xl font-bold mb-4">{{ $post->title }}</h1>
                     @endif
-                    <div class="flex items-center text-gray-600 text-sm space-x-4">
-                        @if($post->category)
+                    
+                    @if($post->category)
+                        <div class="flex items-center text-gray-600 text-sm space-x-4">
                             <span class="bg-blue-100 text-blue-600 px-3 py-1 rounded">{{ $post->category->name }}</span>
-                        @endif
-                        <span><i class="fas fa-eye mr-1"></i> {{ number_format($post->views) }} views</span>
-                        <span><i class="fas fa-calendar mr-1"></i> {{ $post->published_at->format('M d, Y') }}</span>
-                    </div>
+                        </div>
+                    @endif
                 </div>
 
                 <!-- Ad: Content Top -->
@@ -39,7 +38,7 @@
                 @endif
 
                 <!-- Video Player -->
-                @if($post->facebook_video_url)
+                @if($post->facebook_video_url || $post->video_embed_code)
                     <div class="">
                         @if($post->video_type === 'facebook')
                             <!-- Facebook embed - Natural aspect ratio -->
@@ -89,7 +88,7 @@
                                             style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain;"
                                             controls
                                             preload="auto"
-                                            poster="{{ $post->thumbnail ? Storage::url($post->thumbnail) : '' }}">
+                                            poster="{{ $post->thumbnail ?? '' }}">
                                             <source src="{{ $post->video_file_url ?? $post->facebook_video_url }}" type="video/mp4">
                                             Your browser does not support the video tag.
                                         </video>
@@ -153,22 +152,26 @@
             <!-- Related Posts -->
             @if($relatedPosts->count() > 0)
                 <div class="mt-8">
-                    <h2 class="text-2xl font-bold mb-4">Related Videos</h2>
+                    <h2 class="text-2xl font-bold mb-4">Related News</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                         @foreach($relatedPosts as $related)
-                            <a href="{{ route('blog.show', $related->slug) }}" class="block bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition">
+                            <a href="{{ route('blog.show', $related->slug) }}" class="block bg-white rounded-lg overflow-hidden hover:shadow-xl transition">
                                 @if($related->thumbnail)
-                                    <img src="{{ Storage::url($related->thumbnail) }}" alt="{{ $related->title }}" class="w-full h-32 object-cover">
+                                    <img src="{{ str_starts_with($related->thumbnail, 'http') ? $related->thumbnail : Storage::url($related->thumbnail) }}" alt="{{ $related->title }}" class="w-full h-48 object-cover">
                                 @else
-                                    <div class="w-full h-32 bg-gradient-to-r from-blue-400 to-indigo-500 flex items-center justify-center">
-                                        <i class="fas fa-video text-white text-2xl"></i>
+                                    <div class="w-full h-48 bg-gradient-to-r from-blue-400 to-indigo-500 flex items-center justify-center">
+                                        <i class="fas fa-newspaper text-white text-2xl"></i>
                                     </div>
                                 @endif
-                                <div class="p-3">
-                                    <h3 class="font-bold text-sm line-clamp-2">{{ $related->title }}</h3>
-                                    <div class="text-xs text-gray-500 mt-1">
-                                        <i class="fas fa-eye mr-1"></i> {{ number_format($related->views) }}
-                                    </div>
+                                <!-- Title at footer/bottom of image -->
+                                <div class="p-3 bg-white">
+                                    @if($related->title_thumbnail)
+                                        <!-- Show generated title image -->
+                                        <img src="{{ str_starts_with($related->title_thumbnail, 'http') ? $related->title_thumbnail : Storage::url($related->title_thumbnail) }}" alt="{{ $related->title }}" class="w-full rounded">
+                                    @else
+                                        <!-- Show text title -->
+                                        <h3 class="font-bold text-sm line-clamp-2">{{ $related->title }}</h3>
+                                    @endif
                                 </div>
                             </a>
                         @endforeach

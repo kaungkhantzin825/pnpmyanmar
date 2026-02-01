@@ -8,8 +8,6 @@ use App\Models\PostCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Intervention\Image\ImageManager;
-use Intervention\Image\Drivers\Gd\Driver;
 
 class BlogAdminController extends Controller
 {
@@ -38,6 +36,7 @@ class BlogAdminController extends Controller
             'facebook_video_url' => 'nullable|string',
             'video_embed_code' => 'nullable|string',
             'thumbnail' => 'nullable|image|max:2048',
+            'title_image_upload' => 'nullable|image|max:2048',
             'category_id' => 'nullable|exists:post_categories,id',
             'status' => 'required|in:draft,published,archived',
             'is_featured' => 'boolean',
@@ -48,10 +47,18 @@ class BlogAdminController extends Controller
         $validated['user_id'] = auth()->id();
         $validated['slug'] = Str::slug($validated['title']);
 
-        // Auto-generate thumbnail from title if requested
-        if ($request->has('auto_generate_thumbnail') && $request->auto_generate_thumbnail) {
-            $validated['title_thumbnail'] = $this->generateThumbnailFromText($validated['title'], $validated['description'] ?? '');
-        } elseif ($request->hasFile('thumbnail')) {
+        // Title image: upload takes precedence, else generate from text when checkbox is on
+        if ($request->hasFile('title_image_upload')) {
+            $validated['title_thumbnail'] = $request->file('title_image_upload')->store('posts/thumbnails', 'public');
+        } elseif ($request->boolean('auto_generate_thumbnail')) {
+            $validated['title_thumbnail'] = $this->generateThumbnailFromText(
+                $validated['title'],
+                $validated['description'] ?? ''
+            );
+        }
+
+        // Handle regular thumbnail upload
+        if ($request->hasFile('thumbnail')) {
             $validated['thumbnail'] = $request->file('thumbnail')->store('posts/thumbnails', 'public');
         }
 
@@ -81,6 +88,7 @@ class BlogAdminController extends Controller
             'facebook_video_url' => 'nullable|string',
             'video_embed_code' => 'nullable|string',
             'thumbnail' => 'nullable|image|max:2048',
+            'title_image_upload' => 'nullable|image|max:2048',
             'category_id' => 'nullable|exists:post_categories,id',
             'status' => 'required|in:draft,published,archived',
             'is_featured' => 'boolean',
@@ -90,13 +98,29 @@ class BlogAdminController extends Controller
 
         $validated['slug'] = Str::slug($validated['title']);
 
-        // Auto-generate thumbnail from title if requested
-        if ($request->has('auto_generate_thumbnail') && $request->auto_generate_thumbnail) {
+        // Title image: upload takes precedence, else generate when checkbox on, else remove
+        if ($request->hasFile('title_image_upload')) {
             if ($post->title_thumbnail) {
                 Storage::disk('public')->delete($post->title_thumbnail);
             }
-            $validated['title_thumbnail'] = $this->generateThumbnailFromText($validated['title'], $validated['description'] ?? '');
-        } elseif ($request->hasFile('thumbnail')) {
+            $validated['title_thumbnail'] = $request->file('title_image_upload')->store('posts/thumbnails', 'public');
+        } elseif ($request->boolean('auto_generate_thumbnail')) {
+            if ($post->title_thumbnail) {
+                Storage::disk('public')->delete($post->title_thumbnail);
+            }
+            $validated['title_thumbnail'] = $this->generateThumbnailFromText(
+                $validated['title'],
+                $validated['description'] ?? ''
+            );
+        } else {
+            if ($post->title_thumbnail) {
+                Storage::disk('public')->delete($post->title_thumbnail);
+            }
+            $validated['title_thumbnail'] = null;
+        }
+
+        // Handle regular thumbnail upload
+        if ($request->hasFile('thumbnail')) {
             if ($post->thumbnail) {
                 Storage::disk('public')->delete($post->thumbnail);
             }
@@ -130,95 +154,52 @@ class BlogAdminController extends Controller
     }
 
     /**
-     * Generate thumbnail image from text using Intervention Image
+     * Generate title image from text using Node.js + Puppeteer for proper Myanmar Unicode rendering.
+     * Extracts text between asterisks if present: "မြန်မာစာ * English Text * ၁၀၆" → "English Text"
      */
     private function generateThumbnailFromText($title, $description = '')
     {
-        // Image dimensions
-        $width = 1200;
-        $height = 630;
+        // Extract text between asterisks if present
+        $displayTitle = trim(preg_match('/\*\s*([^*]+?)\s*\*/', $title, $m) ? $m[1] : $title);
         
-        // Create image manager with GD driver
-        $manager = new ImageManager(new Driver());
-        
-        // Create blank image with blue gradient background
-        $image = $manager->create($width, $height);
-        
-        // Fill with gradient (blue)
-        $image->fill('#3B82F6');
-        
-        // Add semi-transparent overlay for better text visibility
-        $image->place(
-            $manager->create($width, $height)->fill('rgba(0, 0, 0, 0.2)'),
-            'top-left'
-        );
-        
-        // Prepare title text (wrap if too long)
-        $titleLines = $this->wrapText($title, 40);
-        $titleText = implode("\n", array_slice($titleLines, 0, 3)); // Max 3 lines
-        
-        // Add title text
-        $image->text($titleText, $width / 2, $height / 2 - 50, function ($font) {
-            $font->file(public_path('fonts/arial.ttf')); // Will use default if not found
-            $font->size(60);
-            $font->color('#FFFFFF');
-            $font->align('center');
-            $font->valign('middle');
-        });
-        
-        // Add description if provided
-        if (!empty($description)) {
-            $descLines = $this->wrapText($description, 60);
-            $descText = implode("\n", array_slice($descLines, 0, 2)); // Max 2 lines
-            
-            $image->text($descText, $width / 2, $height / 2 + 100, function ($font) {
-                $font->file(public_path('fonts/arial.ttf'));
-                $font->size(30);
-                $font->color('#E5E7EB');
-                $font->align('center');
-                $font->valign('middle');
-            });
-        }
-        
-        // Save image
+        // Generate unique filename
         $filename = 'posts/thumbnails/' . Str::random(40) . '.png';
-        $path = storage_path('app/public/' . $filename);
+        $outputPath = storage_path('app/public/' . $filename);
         
         // Ensure directory exists
-        $directory = dirname($path);
-        if (!file_exists($directory)) {
-            mkdir($directory, 0755, true);
+        $dir = dirname($outputPath);
+        if (!is_dir($dir)) {
+            mkdir($dir, 0755, true);
         }
         
-        $image->save($path);
+        // Path to Node.js script
+        $scriptPath = base_path('scripts/generate-image.js');
+        $nodePath = 'node'; // Assumes node is in PATH
         
-        return $filename;
+        // Escape arguments for shell
+        $titleEscaped = escapeshellarg($displayTitle);
+        $outputEscaped = escapeshellarg($outputPath);
+        $descriptionEscaped = $description ? escapeshellarg($description) : '';
+        
+        // Build command
+        $command = "cd " . escapeshellarg(base_path('scripts')) . " && $nodePath generate-image.js $titleEscaped $outputEscaped $descriptionEscaped 2>&1";
+        
+        // Execute Node.js script
+        $output = shell_exec($command);
+        
+        // Check if file was created
+        if (file_exists($outputPath)) {
+            return $filename;
+        }
+        
+        // If Node.js failed, show error and return null
+        request()->session()->flash(
+            'error',
+            'Failed to generate title image. Error: ' . ($output ?? 'Unknown error')
+        );
+        
+        return null;
     }
 
-    /**
-     * Wrap text to fit within specified width
-     */
-    private function wrapText($text, $maxChars)
-    {
-        $words = explode(' ', $text);
-        $lines = [];
-        $currentLine = '';
-        
-        foreach ($words as $word) {
-            if (strlen($currentLine . ' ' . $word) <= $maxChars) {
-                $currentLine .= ($currentLine ? ' ' : '') . $word;
-            } else {
-                if ($currentLine) {
-                    $lines[] = $currentLine;
-                }
-                $currentLine = $word;
-            }
-        }
-        
-        if ($currentLine) {
-            $lines[] = $currentLine;
-        }
-        
-        return $lines;
-    }
+
 }

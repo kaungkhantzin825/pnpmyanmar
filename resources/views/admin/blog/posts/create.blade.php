@@ -105,16 +105,21 @@
 
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">Title Image Generator</h3>
+                    <h3 class="card-title">Title Image</h3>
                 </div>
                 <div class="card-body">
+                    <div class="form-group mb-3">
+                        <label class="d-block mb-2"><strong>Upload Title Image</strong></label>
+                        <input type="file" name="title_image_upload" class="form-control-file" accept="image/*">
+                        <small class="form-text text-muted">Upload an image (e.g. from Canva or a browser) for correct Myanmar text. Max 2MB.</small>
+                    </div>
                     <div class="form-group">
                         <div class="custom-control custom-checkbox mb-3">
                             <input type="checkbox" class="custom-control-input" id="auto_generate_thumbnail" name="auto_generate_thumbnail" value="1" {{ old('auto_generate_thumbnail') ? 'checked' : '' }} onchange="toggleThumbnailUpload()">
                             <label class="custom-control-label" for="auto_generate_thumbnail">
-                                <strong>Generate Title Image</strong>
+                                <strong>Or generate from title text</strong>
                             </label>
-                            <small class="form-text text-muted">Convert title and description text into an image that will be displayed instead of plain text</small>
+                            <small class="form-text text-muted">Uses browser rendering for proper Myanmar shaping (requires Node + Puppeteer). If not installed, use upload above.</small>
                         </div>
                     </div>
                 </div>

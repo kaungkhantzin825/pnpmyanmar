@@ -74,7 +74,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-20">
                 <!-- Logo -->
-                <a href="{{ route('blog.index') }}" class="flex items-center flex-shrink-0">
+                <a href="{{ route('home') }}" class="flex items-center flex-shrink-0">
                     <img src="{{ asset('images/SanPya-Logo.png') }}" alt="VideoShare" style="height: 50px; width: auto;">
                 </a>
 
@@ -86,7 +86,7 @@
                             Menu <i class="fas fa-chevron-down ml-2 text-xs"></i>
                         </button>
                         <div class="absolute left-0 mt-2 w-48 bg-white rounded-lg shadow-xl border opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
-                            <a href="{{ route('blog.index') }}" class="block px-4 py-3 text-gray-700 hover:bg-teal-50 hover:text-teal-600 rounded-t-lg">Home</a>
+                            <a href="{{ route('home') }}" class="block px-4 py-3 text-gray-700 hover:bg-teal-50 hover:text-teal-600 rounded-t-lg">Home</a>
                             <a href="{{ route('blog.search') }}" class="block px-4 py-3 text-gray-700 hover:bg-teal-50 hover:text-teal-600">Search Videos</a>
                             @auth
                                 @if(auth()->user()->role === 'admin')
@@ -103,13 +103,13 @@
                             About Us <i class="fas fa-chevron-down ml-2 text-xs"></i>
                         </button>
                         <div class="absolute left-0 mt-2 w-48 bg-white rounded-lg shadow-xl border opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
-                            <a href="{{ route('blog.index') }}" class="block px-4 py-3 text-gray-700 hover:bg-teal-50 hover:text-teal-600 rounded-t-lg">About</a>
-                            <a href="{{ route('blog.index') }}" class="block px-4 py-3 text-gray-700 hover:bg-teal-50 hover:text-teal-600 rounded-b-lg">Contact</a>
+                            <a href="{{ route('home') }}" class="block px-4 py-3 text-gray-700 hover:bg-teal-50 hover:text-teal-600 rounded-t-lg">About</a>
+                            <a href="{{ route('home') }}" class="block px-4 py-3 text-gray-700 hover:bg-teal-50 hover:text-teal-600 rounded-b-lg">Contact</a>
                         </div>
                     </div>
                     
                     <!-- Contact Us -->
-                    <a href="{{ route('blog.index') }}" class="text-gray-800 hover:text-teal-600 font-semibold text-base py-2">Videos</a>
+                    <a href="{{ route('home') }}" class="text-gray-800 hover:text-teal-600 font-semibold text-base py-2">Videos</a>
                 </div>
 
                 <!-- Right Side - Buttons -->
@@ -173,17 +173,17 @@
                 <div>
                     <h3 class="font-semibold mb-4 text-teal-400">Company</h3>
                     <ul class="space-y-2 text-gray-400">
-                        <li><a href="{{ route('blog.index') }}" class="hover:text-white">About Us</a></li>
-                        <li><a href="{{ route('blog.index') }}" class="hover:text-white">Partners</a></li>
+                        <li><a href="{{ route('home') }}" class="hover:text-white">About Us</a></li>
+                        <li><a href="{{ route('home') }}" class="hover:text-white">Partners</a></li>
                     </ul>
                 </div>
                 <div>
                     <h3 class="font-semibold mb-4 text-teal-400">Support</h3>
                     <ul class="space-y-2 text-gray-400">
-                        <li><a href="{{ route('blog.index') }}" class="hover:text-white">Contact Us</a></li>
-                        <li><a href="{{ route('blog.index') }}" class="hover:text-white">Help Center</a></li>
-                        <li><a href="{{ route('blog.index') }}" class="hover:text-white">Privacy Policy</a></li>
-                        <li><a href="{{ route('blog.index') }}" class="hover:text-white">Terms of Service</a></li>
+                        <li><a href="{{ route('home') }}" class="hover:text-white">Contact Us</a></li>
+                        <li><a href="{{ route('home') }}" class="hover:text-white">Help Center</a></li>
+                        <li><a href="{{ route('home') }}" class="hover:text-white">Privacy Policy</a></li>
+                        <li><a href="{{ route('home') }}" class="hover:text-white">Terms of Service</a></li>
                     </ul>
                 </div>
                 <div>

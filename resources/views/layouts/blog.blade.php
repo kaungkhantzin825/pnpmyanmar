@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Video Blog')</title>
-    <meta name="description" content="@yield('description', 'Share and watch amazing videos')">
+    <title>@yield('title', 'PNP Myanmar News')</title>
+    <meta name="description" content="@yield('description', 'Latest news and updates from Myanmar')">
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -47,16 +47,16 @@
     <nav class="bg-white shadow-md sticky top-0 z-50">
         <div class="w-full px-4">
             <div class="max-w-screen-2xl mx-auto flex justify-between items-center py-4">
-                <a href="{{ route('blog.index') }}" class="text-2xl font-bold text-blue-600">
-                    <i class="fas fa-video"></i> VideoShare
+                <a href="{{ route('home') }}" class="text-lg md:text-2xl font-bold text-blue-600">
+                    <i class="fas fa-newspaper"></i> PNP Myanmar News
                 </a>
                 
-                <div class="flex items-center space-x-6">
-                    <a href="{{ route('blog.index') }}" class="text-gray-700 hover:text-blue-600">Home</a>
+                <div class="flex items-center space-x-2 md:space-x-6">
+                    <a href="{{ route('home') }}" class="text-sm md:text-base text-gray-700 hover:text-blue-600">Home</a>
                     
                     <!-- Categories Dropdown -->
                     <div class="relative group">
-                        <button class="text-gray-700 hover:text-blue-600 flex items-center">
+                        <button class="text-sm md:text-base text-gray-700 hover:text-blue-600 flex items-center">
                             Categories <i class="fas fa-chevron-down ml-1 text-xs"></i>
                         </button>
                         <div class="absolute left-0 mt-2 w-48 bg-white rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
@@ -85,14 +85,14 @@
                     
                     @auth
                         @if(auth()->user()->role === 'admin')
-                            <a href="{{ route('admin.dashboard') }}" class="text-gray-700 hover:text-blue-600">Admin</a>
+                            <a href="{{ route('admin.dashboard') }}" class="text-sm md:text-base text-gray-700 hover:text-blue-600">Admin</a>
                         @endif
                         <form method="POST" action="{{ route('logout') }}" class="inline">
                             @csrf
-                            <button type="submit" class="text-gray-700 hover:text-blue-600">Logout</button>
+                            <button type="submit" class="text-sm md:text-base text-gray-700 hover:text-blue-600">Logout</button>
                         </form>
                     @else
-                        <a href="{{ route('login') }}" class="text-gray-700 hover:text-blue-600">Login</a>
+                        <a href="{{ route('login') }}" class="text-sm md:text-base text-gray-700 hover:text-blue-600 hidden md:inline">Login</a>
                     @endauth
                 </div>
             </div>
@@ -121,7 +121,7 @@
         
         <div class="w-full px-4 py-8">
             <div class="max-w-screen-2xl mx-auto text-center">
-                <p>&copy; {{ date('Y') }} VideoShare. All rights reserved.</p>
+                <p>&copy; {{ date('Y') }} PNP Myanmar News. All rights reserved.</p>
             </div>
         </div>
     </footer>

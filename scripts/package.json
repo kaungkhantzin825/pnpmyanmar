@@ -1,0 +1,12 @@
+{
+  "name": "pnp-myanmar-image-generator",
+  "version": "1.0.0",
+  "description": "Generate images with Myanmar Unicode text using Puppeteer",
+  "main": "generate-image.js",
+  "scripts": {
+    "test": "node generate-image.js"
+  },
+  "dependencies": {
+    "puppeteer": "^21.0.0"
+  }
+}

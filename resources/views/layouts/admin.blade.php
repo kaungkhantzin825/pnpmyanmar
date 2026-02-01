@@ -22,7 +22,7 @@
         </ul>
         <ul class="navbar-nav ml-auto">
             <li class="nav-item">
-                <a class="nav-link" href="{{ route('blog.index') }}" target="_blank">
+                <a class="nav-link" href="{{ route('home') }}" target="_blank">
                     <i class="fas fa-eye"></i> View Site
                 </a>
             </li>
@@ -113,6 +113,12 @@
                     <div class="alert alert-danger alert-dismissible">
                         <button type="button" class="close" data-dismiss="alert">&times;</button>
                         {{ session('error') }}
+                    </div>
+                @endif
+                @if(session('warning'))
+                    <div class="alert alert-warning alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        {{ session('warning') }}
                     </div>
                 @endif
                 @yield('content')
