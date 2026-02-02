@@ -174,15 +174,37 @@ class BlogAdminController extends Controller
         
         // Path to Node.js script
         $scriptPath = base_path('scripts/generate-image.js');
-        $nodePath = 'node'; // Assumes node is in PATH
+        
+        // Try to find node executable
+        // Common paths: Windows, Linux, macOS
+        $nodePaths = [
+            'node',  // If in PATH
+            'C:\\Program Files\\nodejs\\node.exe',  // Windows default
+            'C:\\Program Files (x86)\\nodejs\\node.exe',  // Windows 32-bit
+            '/usr/bin/node',  // Linux/Unix
+            '/usr/local/bin/node',  // macOS/Linux
+            'C:\\Users\\' . get_current_user() . '\\AppData\\Roaming\\npm\\node.exe',  // Windows user install
+        ];
+        
+        $nodeCommand = 'node';  // Default
+        
+        // Test which node path works
+        foreach ($nodePaths as $path) {
+            $test = shell_exec("\"$path\" --version 2>&1");
+            if ($test && strpos($test, 'v') === 0) {
+                $nodeCommand = $path;
+                break;
+            }
+        }
         
         // Escape arguments for shell
         $titleEscaped = escapeshellarg($displayTitle);
         $outputEscaped = escapeshellarg($outputPath);
         $descriptionEscaped = $description ? escapeshellarg($description) : '';
         
-        // Build command
-        $command = "cd " . escapeshellarg(base_path('scripts')) . " && $nodePath generate-image.js $titleEscaped $outputEscaped $descriptionEscaped 2>&1";
+        // Build command - use full paths
+        $scriptsDir = base_path('scripts');
+        $command = "cd " . escapeshellarg($scriptsDir) . " && \"$nodeCommand\" generate-image.js $titleEscaped $outputEscaped $descriptionEscaped 2>&1";
         
         // Execute Node.js script
         $output = shell_exec($command);
@@ -192,11 +214,15 @@ class BlogAdminController extends Controller
             return $filename;
         }
         
-        // If Node.js failed, show error and return null
-        request()->session()->flash(
-            'error',
-            'Failed to generate title image. Error: ' . ($output ?? 'Unknown error')
-        );
+        // If Node.js failed, show error with helpful message
+        $errorMsg = 'Failed to generate title image. ';
+        if (strpos($output, 'not found') !== false || strpos($output, 'command not found') !== false) {
+            $errorMsg .= 'Node.js is not installed or not in PATH. Please install Node.js v18+ or upload a title image manually.';
+        } else {
+            $errorMsg .= 'Error: ' . ($output ?? 'Unknown error');
+        }
+        
+        request()->session()->flash('error', $errorMsg);
         
         return null;
     }
