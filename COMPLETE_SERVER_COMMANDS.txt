@@ -1,0 +1,66 @@
+# ============================================
+# COMPLETE SERVER SETUP COMMANDS
+# Copy and paste these commands one by one
+# ============================================
+
+# Step 1: Connect to your server
+# Open your terminal (CMD, PowerShell, or Terminal) and run:
+ssh root@72.62.64.30
+# Password: Sithu@7890123123
+
+# Step 2: Go to project directory
+cd /var/www/html/pnpmyanmar
+
+# Step 3: Check if you're in the right place
+pwd
+ls -la
+
+# You should see: scripts, app, resources, etc.
+
+# Step 4: Go to scripts directory
+cd scripts
+
+# Step 5: Install Chrome for Puppeteer
+npx puppeteer browsers install chrome
+
+# Wait for download to complete (2-3 minutes)
+# You'll see progress: Downloading Chrome...
+
+# Step 6: Test image generation
+node generate-image.js "Test" test.png
+
+# If successful, you'll see:
+# "Image generated successfully: test.png"
+
+# Step 7: Test with Myanmar text
+node generate-image.js "ကမ္ဘာ့သတင်း သုံးသပ်ချက်" test-myanmar.png
+
+# Step 8: Check if images were created
+ls -lh test*.png
+
+# Step 9: Clean up test files
+rm test.png test-myanmar.png
+
+# Step 10: Set permissions for Laravel
+cd /var/www/html/pnpmyanmar
+chown -R www-data:www-data storage
+chmod -R 755 storage
+chown -R www-data:www-data scripts
+
+# Step 11: Test from Laravel (optional)
+php artisan tinker
+# Then type: exit
+
+# ============================================
+# DONE! Now test in admin panel:
+# 1. Go to your website admin
+# 2. Create/edit a post
+# 3. Check "Generate from title text"
+# 4. Save
+# ============================================
+
+# If you get any errors, check:
+tail -f storage/logs/laravel.log
+
+# To exit SSH:
+exit

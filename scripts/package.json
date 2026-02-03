@@ -7,6 +7,6 @@
     "test": "node generate-image.js"
   },
   "dependencies": {
-    "puppeteer": "^21.0.0"
+    "puppeteer": "^23.0.0"
   }
 }
