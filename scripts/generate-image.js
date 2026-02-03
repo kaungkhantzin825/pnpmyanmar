@@ -12,7 +12,16 @@ async function generateImage(title, description = '', outputPath) {
             '--disable-accelerated-2d-canvas',
             '--no-first-run',
             '--no-zygote',
-            '--disable-gpu'
+            '--disable-gpu',
+            '--disable-software-rasterizer',
+            '--disable-dev-tools',
+            '--no-crash-upload',
+            '--disable-crash-reporter',
+            '--disable-extensions',
+            '--disable-in-process-stack-traces',
+            '--disable-logging',
+            '--log-level=3',
+            '--single-process'  // Run in single process mode
         ]
     });
     
